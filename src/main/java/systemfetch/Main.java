@@ -1,9 +1,23 @@
 package systemfetch;
 
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
+import oshi.hardware.HardwareAbstractionLayer;
+
 public class Main {
     public static void main(String[] args){
-        System.out.println("====================");
-        System.out.println("System-Fetch v1.0.0");
-        System.out.println("====================");
+     SystemInfo systemInfo = new SystemInfo();
+     //CentralProcessor processor = systemInfo.getHardware().getProcessor();
+     HardwareAbstractionLayer hal = new SystemInfo().getHardware();
+
+     //String name = processor.getProcessorIdentifier().getName();
+     try{
+         String cpuName = cpuInfo.report(hal.getProcessor());
+         System.out.println("Your CPU is: " + cpuName);
+     } catch (InterruptedException e){
+         Thread.currentThread().interrupt();
+         System.err.println("Load measurament interrupted");
+     }
+
     }
 }
