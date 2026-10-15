@@ -14,6 +14,7 @@ public class Main {
      try{
          String cpuName = cpuInfo.report(hal.getProcessor());
          System.out.println("Your CPU is: " + cpuName);
+         System.out.print(memInfo.report(hal.getMemory()));
      } catch (InterruptedException e){
          Thread.currentThread().interrupt();
          System.err.println("Load measurament interrupted");
