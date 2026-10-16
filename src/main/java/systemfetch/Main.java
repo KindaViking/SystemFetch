@@ -20,5 +20,8 @@ public class Main {
          System.err.println("Load measurament interrupted");
      }
 
+     System.out.println("USB");
+     System.out.print(usbInfo.report(usbInfo.readAll()));
+
     }
 }
