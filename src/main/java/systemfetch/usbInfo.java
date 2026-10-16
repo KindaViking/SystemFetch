@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 public class usbInfo {
     private static final Path DEFAULT_ROOT = Path.of("/sys/bus/usb/devices");
 
-    /** One USB device. IDs are -1 if they could not be read. */
+    //decalre immutable data holder
     public record UsbDevice(String name, int vendorId, int productId) {}
 
     public static List<UsbDevice> readAll() {
@@ -19,6 +19,7 @@ public class usbInfo {
     }
 
     /** Takes the folder as a parameter so it can be tested with a fake one. */
+    //makes empty list, if there usb device folder doesn't exist, return an empty list
     public static List<UsbDevice> readAll(Path root) {
         List<UsbDevice> devices = new ArrayList<>();
 
@@ -26,6 +27,7 @@ public class usbInfo {
             return devices;
         }
 
+        //gives a stream of everything in the folder, sorts them and adds them as strings to ArrayList devices
         try (Stream<Path> entries = Files.list(root)) {
             for (Path entry : entries.sorted().toList()) {
                 // Interface entries such as 1-2:1.0 have no idVendor file
@@ -43,7 +45,7 @@ public class usbInfo {
         return devices;
     }
 
-    /** Reads a hex number from a file, with or without a 0x prefix. Returns -1 on failure. */
+    //reads a hex number from file, removes 0x, if it fails it returns -1
     private static int readHex(Path file) {
         try {
             String text = Files.readString(file).strip();
