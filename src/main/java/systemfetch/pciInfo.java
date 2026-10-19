@@ -1,5 +1,6 @@
 package systemfetch;
 
+import java.util.Comparator;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -106,5 +107,22 @@ public class pciInfo {
 
     private static String classHex(int id) {
         return id < 0 ? "unknown" : String.format("0x%06x", id);
+    }
+
+    /*
+     *PCI Device sorting methods begin here
+    */
+    private static int addressPart(PciDevice device, int index){
+        String[] parts = device.address().split("[:.]");
+        return Integer.parseInt(parts[index], 16);
+    }
+    private static int bus(PciDevice device){
+        return addressPart(device, 1);
+    }
+    private static int device(PciDevice device){
+        return addressPart(device, 2);
+    }
+    private static int function(PciDevice device){
+        return addressPart(device, 3);
     }
 }
