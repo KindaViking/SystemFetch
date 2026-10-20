@@ -139,4 +139,27 @@ public class htmlReport {
     private static String hex(int id, int digits) {
         return id < 0 ? "unknown" : String.format("0x%0" + digits + "x", id);
     }
+    public static Path write(String html) {
+        Path reportPath = Path.of("report.html").toAbsolutePath();
+        try {
+            Files.writeString(reportPath, html);
+            System.out.println("Report written to " + reportPath);
+            return reportPath;
+        } catch (IOException e) {
+            System.err.println("Couldn't write report: " + e.getMessage());
+            return null;
+        }
+    }
+    public static void open(Path reportPath) {
+        if (Desktop.isDesktopSupported()
+                && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            try {
+                Desktop.getDesktop().browse(reportPath.toUri());
+            } catch (IOException e) {
+                System.out.println("Couldn't open browser, open this file: " + reportPath);
+            }
+        } else {
+            System.out.println("Open this file in a browser: " + reportPath);
+        }
+    }             
 }
