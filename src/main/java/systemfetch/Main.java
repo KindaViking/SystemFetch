@@ -5,6 +5,7 @@ import oshi.hardware.CentralProcessor;
 import oshi.hardware.HardwareAbstractionLayer;
 import java.util.List;
 import java.util.Scanner;
+import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,30 +13,35 @@ public class Main {
         // CentralProcessor processor = systemInfo.getHardware().getProcessor();
         HardwareAbstractionLayer hal = new SystemInfo().getHardware();
 
+        String cpuText = "";
+        String memText = "";
+
         // String name = processor.getProcessorIdentifier().getName();
         try {
-            String cpuName = cpuInfo.report(hal.getProcessor());
-            System.out.println("Your CPU is: " + cpuName);
-            System.out.print(memInfo.report(hal.getMemory()));
+            cpuText = cpuInfo.report(hal.getProcessor());
+            //System.out.println("Your CPU is: " + cpuText);
+
+            memText = memInfo.report(hal.getMemory());
+            //System.out.print(memText);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.err.println("Load measurament interrupted\n");
         }
-        System.out.println("USB");
-        System.out.print(usbInfo.report(usbInfo.readAll()));
-
-        //System.out.println("PCI");
-        //System.out.println(pciInfo.report(pciInfo.readAll()));
+        List<usbInfo.UsbDevice> usbDevices = usbInfo.readAll();
+        //System.out.println("USB");
+        //System.out.print(usbInfo.report(usbDevices));
         idLookup lookup = new idLookup();
 
         //sorting pci
         List<pciInfo.PciDevice> pciDevices = pciInfo.readAll();
-        //System.out.println("PCI (By Vendor)");
-        //System.out.println(pciInfo.report(pciInfo.sortByVendor(pciDevices, lookup)));
 
-        //System.out.println("PCI (By Bus, Device or Function)");
-        //System.out.println(pciInfo.report(pciInfo.sortByAddress(pciDevices)));
-
+        //calling htmlReport to write data to html file and display it
+        String html = htmlReport.build(cpuText, memText, usbDevices, pciDevices, lookup);
+        Path reportPath = htmlReport.write(html);
+        if (reportPath != null){
+            htmlReport.open(reportPath);
+        }
+/*
         //add a loop to ask which sort the user would rather see
         Scanner scanner = new Scanner(System.in);
         //keep asking until quit is received
@@ -63,7 +69,7 @@ public class Main {
             }
         }
         scanner.close();
-
+*/
     }
 
 }
