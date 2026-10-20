@@ -112,17 +112,42 @@ public class pciInfo {
     /*
      *PCI Device sorting methods begin here
     */
-    private static int addressPart(PciDevice device, int index){
+
+    //splits up the address into its parts and saves them into an array
+    //WHY? => So that we can access bus/device/function individually
+    //example of an address => 0000:00:1e.0
+
+    private static int addressPartSplit(PciDevice device, int index){
         String[] parts = device.address().split("[:.]");
         return Integer.parseInt(parts[index], 16);
     }
     private static int bus(PciDevice device){
-        return addressPart(device, 1);
+        return addressPartSplit(device, 1);
     }
     private static int device(PciDevice device){
-        return addressPart(device, 2);
+        return addressPartSplit(device, 2);
     }
     private static int function(PciDevice device){
-        return addressPart(device, 3);
+        return addressPartSplit(device, 3);
     }
+
+    //first compare bus, then compare devices if buses are equal, then compare function if devices are equal
+    private static final Comparator<PciDevice> BY_ADDRESS =
+        Comparator.comparingInt(pciInfo::bus).thenComparingInt(pciInfo::device).thenComparingInt(pciInfo::function);
+
+    //copies the list of devices and sorts them by their address
+    public static List<PciDevice> sortByAddress(List<PciDevice> devices){
+        List<PciDevice> sorted = new ArrayList<>(devices);
+        sorted.sort(BY_ADDRESS);
+        return sorted;
+    }
+
+    //also copies list and sorts by vendor name; the lambda is a method that for each device, looks up its vendor name and compares by that
+    public static List<PciDevice> sortByVendor(List<PciDevice> devices, idLookup lookup){
+        List<PciDevice> sorted = new ArrayList<>(devices);
+        sorted.sort(Comparator.comparing((PciDevice device) -> lookup.pciVendorName(device.vendorId()), String.CASE_INSENSITIVE_ORDER).thenComparing(BY_ADDRESS));
+        return sorted;
+    }
+
+
 }
