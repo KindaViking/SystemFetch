@@ -143,7 +143,7 @@ public class htmlReport {
         Path reportPath = Path.of("report.html").toAbsolutePath();
         try {
             Files.writeString(reportPath, html);
-            System.out.println("Report written to " + reportPath);
+            System.out.println("Report written to report.html");
             return reportPath;
         } catch (IOException e) {
             System.err.println("Couldn't write report: " + e.getMessage());
@@ -156,10 +156,10 @@ public class htmlReport {
             try {
                 Desktop.getDesktop().browse(reportPath.toUri());
             } catch (IOException e) {
-                System.out.println("Couldn't open browser, open this file: " + reportPath);
+                System.out.println("Couldn't open browser, open report.html in the project folder");
             }
         } else {
-            System.out.println("Open this file in a browser: " + reportPath);
+            System.out.println("Open report.html from the project folder");
         }
     }             
 }
