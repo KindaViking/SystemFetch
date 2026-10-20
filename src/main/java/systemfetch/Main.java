@@ -3,6 +3,7 @@ package systemfetch;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.HardwareAbstractionLayer;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -25,6 +26,14 @@ public class Main {
         System.out.println("PCI");
         System.out.println(pciInfo.report(pciInfo.readAll()));
         idLookup lookup = new idLookup();
+
+        //sorting pci
+        List<pciInfo.PciDevice> pciDevices = pciInfo.readAll();
+        System.out.println("PCI (By Vendor)");
+        System.out.println(pciInfo.report(pciInfo.sortByVendor(pciDevices, lookup)));
+
+        System.out.println("PCI (By Bus, Device or Function)");
+        System.out.println(pciInfo.report(pciInfo.sortByAddress(pciDevices)));
 
     }
 
