@@ -22,7 +22,7 @@ public class Main {
             cpuText = cpuInfo.report();
             //System.out.println("Your CPU is: " + cpuText);
 
-            memText = memInfo.report(hal.getMemory());
+            memText = memInfo.report();
             //System.out.print(memText);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
