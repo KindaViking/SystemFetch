@@ -5,8 +5,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 public final class barChart {
-    private static final int WIDTH = 720; // pixels
-    private static final int LEFT = 170;
+    private static final int WIDTH = 800;
+    private static final int LEFT = 240;
     private static final int RIGHT = 100;
     private static final int TOP = 24;
     private static final int ROW_HEIGHT = 34;
@@ -71,7 +71,7 @@ public final class barChart {
                 sb.append(String.format(
                         Locale.ROOT,
                         "<text class=\"chart-label\" x=\"%d\" y=\"%d\" "
-                                + "dominant-baseline=\"middle\">%s</text>\n",
+                                + "text-anchor=\"end\" dominant-baseline=\"middle\">%s</text>%n",
                         LEFT - 12, y + BAR_HEIGHT / 2, escapeXml(labels.get(i))));
 
                 sb.append(String.format(
