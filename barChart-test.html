@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bar Chart Test</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 30px auto;
+        }
+        section {
+            margin-bottom: 35px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bar Chart Generator Test</h1>
+    <section>
+        <h2>1. Normal data (fixed maximum 100)</h2>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 144" width="100%" role="img" aria-label="Horizontal bar chart">
+<style>
+  .chart-label { font: 14px system-ui, sans-serif; fill: #222; }
+  .chart-value { font: 13px system-ui, sans-serif; fill: #333; }
+  .chart-track { fill: #eeeeee; }
+  .chart-bar { fill: #3978c5; }
+  .chart-empty { font: 15px system-ui, sans-serif; fill: #555; }
+</style>
+<text class="chart-label" x="228" y="33" text-anchor="end" dominant-baseline="middle">CPU 0</text>
+<rect class="chart-track" x="240" y="24" width="460" height="18" rx="3"/>
+<rect class="chart-bar" x="240" y="24" width="115.00" height="18" rx="3"/>
+<text class="chart-value" x="710" y="33" dominant-baseline="middle">25</text>
+<text class="chart-label" x="228" y="67" text-anchor="end" dominant-baseline="middle">CPU 1</text>
+<rect class="chart-track" x="240" y="58" width="460" height="18" rx="3"/>
+<rect class="chart-bar" x="240" y="58" width="230.00" height="18" rx="3"/>
+<text class="chart-value" x="710" y="67" dominant-baseline="middle">50</text>
+<text class="chart-label" x="228" y="101" text-anchor="end" dominant-baseline="middle">CPU 2</text>
+<rect class="chart-track" x="240" y="92" width="460" height="18" rx="3"/>
+<rect class="chart-bar" x="240" y="92" width="460.00" height="18" rx="3"/>
+<text class="chart-value" x="710" y="101" dominant-baseline="middle">100</text>
+</svg>    </section>
+    <section>
+        <h2>2. Empty data</h2>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 76" width="100%" role="img" aria-label="Horizontal bar chart">
+<style>
+  .chart-label { font: 14px system-ui, sans-serif; fill: #222; }
+  .chart-value { font: 13px system-ui, sans-serif; fill: #333; }
+  .chart-track { fill: #eeeeee; }
+  .chart-bar { fill: #3978c5; }
+  .chart-empty { font: 15px system-ui, sans-serif; fill: #555; }
+</style>
+<text class="chart-empty" x="240" y="41">No data available</text>
+</svg>    </section>
+    <section>
+        <h2>3. All values zero</h2>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 144" width="100%" role="img" aria-label="Horizontal bar chart">
+<style>
+  .chart-label { font: 14px system-ui, sans-serif; fill: #222; }
+  .chart-value { font: 13px system-ui, sans-serif; fill: #333; }
+  .chart-track { fill: #eeeeee; }
+  .chart-bar { fill: #3978c5; }
+  .chart-empty { font: 15px system-ui, sans-serif; fill: #555; }
+</style>
+<text class="chart-label" x="228" y="33" text-anchor="end" dominant-baseline="middle">CPU 0</text>
+<rect class="chart-track" x="240" y="24" width="460" height="18" rx="3"/>
+<rect class="chart-bar" x="240" y="24" width="0.00" height="18" rx="3"/>
+<text class="chart-value" x="710" y="33" dominant-baseline="middle">0</text>
+<text class="chart-label" x="228" y="67" text-anchor="end" dominant-baseline="middle">CPU 1</text>
+<rect class="chart-track" x="240" y="58" width="460" height="18" rx="3"/>
+<rect class="chart-bar" x="240" y="58" width="0.00" height="18" rx="3"/>
+<text class="chart-value" x="710" y="67" dominant-baseline="middle">0</text>
+<text class="chart-label" x="228" y="101" text-anchor="end" dominant-baseline="middle">CPU 2</text>
+<rect class="chart-track" x="240" y="92" width="460" height="18" rx="3"/>
+<rect class="chart-bar" x="240" y="92" width="0.00" height="18" rx="3"/>
+<text class="chart-value" x="710" y="101" dominant-baseline="middle">0</text>
+</svg>    </section>
+</body>
+</html>
