@@ -1,3 +1,6 @@
 target/
 report.html
 .idea/
+# macOS system files
+.DS_Store
+**/.DS_Store
