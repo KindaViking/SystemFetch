@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) {
-        SystemInfo systemInfo = new SystemInfo();
+        // SystemInfo systemInfo = new SystemInfo();
         // CentralProcessor processor = systemInfo.getHardware().getProcessor();
         HardwareAbstractionLayer hal = new SystemInfo().getHardware();
 
@@ -18,10 +18,11 @@ public class Main {
 
         // String name = processor.getProcessorIdentifier().getName();
         try {
-            cpuText = cpuInfo.report(hal.getProcessor());
+            // CPU now read directly from Linux /proc
+            cpuText = cpuInfo.report();
             //System.out.println("Your CPU is: " + cpuText);
 
-            memText = memInfo.report(hal.getMemory());
+            memText = memInfo.report();
             //System.out.print(memText);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
