@@ -4,6 +4,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+ /* USAGE:
+Call create() with labels and real values collected by the existing
+system information classes. The returned SVG string can be appended
+directly to the HTML StringBuilder in htmlReport.java.
+
+Example: CPU load per logical CPU
+
+    cpuInfo.Load load = cpuInfo.findLoad(1000);
+    double[] perCore = load.perCore();
+    List<String> labels = new ArrayList<>();
+    List<Double> values = new ArrayList<>();
+    for (int i = 0; i < perCore.length; i++) {
+        labels.add("CPU " + i);
+        values.add(perCore[i] * 100);
+    }
+    b.append(barChart.create(labels, values, 100.0));
+
+ */
+
 public final class barChart {
     private static final int WIDTH = 800;
     private static final int LEFT = 240;
