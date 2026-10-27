@@ -14,7 +14,7 @@ public class liveServer {
 
     public static void main(String[] args) throws IOException {
         idLookup lookup = new idLookup();
-        HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 8080), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
         // "/" sends the same page as report.html
         server.createContext("/", exchange -> {
