@@ -1,17 +1,16 @@
 package systemfetch;
 
-import oshi.SystemInfo;
-import oshi.hardware.CentralProcessor;
-import oshi.hardware.HardwareAbstractionLayer;
 import java.util.List;
 import java.util.Scanner;
 import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) {
-        // SystemInfo systemInfo = new SystemInfo();
-        // CentralProcessor processor = systemInfo.getHardware().getProcessor();
-        HardwareAbstractionLayer hal = new SystemInfo().getHardware();
+        String os = System.getProperty("os.name", "");
+        if (!os.toLowerCase().contains("linux")) {
+            System.out.println("This system is not running Linux (detected: " + os + "). SystemFetch only supports Linux.");
+            return;
+        }
 
         String cpuText = "";
         String memText = "";
@@ -20,17 +19,17 @@ public class Main {
         try {
             // CPU now read directly from Linux /proc
             cpuText = cpuInfo.report();
-            //System.out.println("Your CPU is: " + cpuText);
+            System.out.println("Your CPU is: " + cpuText);
 
             memText = memInfo.report();
-            //System.out.print(memText);
+            System.out.print(memText);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.err.println("Load measurament interrupted\n");
         }
         List<usbInfo.UsbDevice> usbDevices = usbInfo.readAll();
-        //System.out.println("USB");
-        //System.out.print(usbInfo.report(usbDevices));
+        System.out.println("USB");
+        System.out.print(usbInfo.report(usbDevices));
         idLookup lookup = new idLookup();
 
         //sorting pci
@@ -42,7 +41,7 @@ public class Main {
         if (reportPath != null){
             htmlReport.open(reportPath);
         }
-/*
+
         //add a loop to ask which sort the user would rather see
         Scanner scanner = new Scanner(System.in);
         //keep asking until quit is received
@@ -70,7 +69,6 @@ public class Main {
             }
         }
         scanner.close();
-*/
     }
 
 }
