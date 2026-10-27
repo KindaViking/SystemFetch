@@ -32,11 +32,11 @@ public class htmlReport {
 
         //CPU: <pre> keeps the formatting from cpuInfo.report
         sb.append("<h2>CPU</h2>\n");
-        sb.append("<pre>").append(escape(cpuText)).append("</pre>\n");
+        sb.append("<pre id=\"cpu\">").append(escape(cpuText)).append("</pre>\n");
 
         //memory
         sb.append("<h2>Memory</h2>\n");
-        sb.append("<pre>").append(escape(memText)).append("</pre>\n");
+        sb.append("<pre id=\"memory\">").append(escape(memText)).append("</pre>\n");
 
         //USB
         sb.append("<h2>USB devices</h2>\n");
@@ -49,6 +49,7 @@ public class htmlReport {
         sb.append("<h3>Sorted by bus, device, function</h3>\n");
         sb.append(pciTable(pciInfo.sortByAddress(pciDevices), lookup));
 
+        sb.append(LIVE_SCRIPT);
         sb.append("</body>\n");
         sb.append("</html>\n");
 
@@ -82,6 +83,24 @@ public class htmlReport {
                 border-bottom: 1px solid #ddd;
             }
             th { background: #f4f4f4; }
+            """;
+
+    // when the page comes from liveServer, asks it for new CPU and memory text every second
+    // does nothing when report.html is opened as a file
+    private static final String LIVE_SCRIPT = """
+            <script>
+              async function update() {
+                const response = await fetch("/data");
+                const data = await response.json();
+                document.getElementById("cpu").textContent = data.cpu;
+                document.getElementById("memory").textContent = data.memory;
+                setTimeout(update, 1000);
+              }
+
+              if (location.protocol.startsWith("http")) {
+                update();
+              }
+            </script>
             """;
 
     // replaces characters that have special meaning in HTML
@@ -161,5 +180,5 @@ public class htmlReport {
         } else {
             System.out.println("Open report.html from the project folder");
         }
-    }             
+    }
 }
