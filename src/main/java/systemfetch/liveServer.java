@@ -52,7 +52,7 @@ public class liveServer {
     // measures the CPU load over one second, or no load if interrupted
     private static cpuInfo.Load measureLoad() {
         try {
-            return cpuInfo.findLoad(1000);
+            return cpuInfo.findLoad(500);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return new cpuInfo.Load(0, new double[0]);

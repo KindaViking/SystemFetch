@@ -97,7 +97,7 @@ public class htmlReport {
                 document.getElementById("cpu").textContent = data.cpu;
                 document.getElementById("memory").textContent = data.memory;
                 document.getElementById("cpu-chart").innerHTML = data.cpuChart;
-                setTimeout(update, 1000);
+                setTimeout(update, 0);
               }
 
               if (location.protocol.startsWith("http")) {
