@@ -118,6 +118,118 @@ public final class barChart {
         return sb.toString();
     }
 
+    // vertical version of create(): one column per value, labels underneath
+    // used for the live CPU usage chart, with fixedMax 100 for percentages
+    public static String createVertical(List<String> labels, List<Double> values, Double fixedMax) {
+        validateInputs(labels, values, fixedMax);
+
+        int side = 20;
+        // each value gets an equal slot across the width, with the bar in the middle of its slot
+        double slotWidth = (double) (WIDTH - 2 * side) / Math.max(labels.size(), 1);
+
+        // when there are too many bars for the labels to fit side by side, turn them sideways
+        int longestLabel = 0;
+        for (String label : labels) {
+            longestLabel = Math.max(longestLabel, label.length());
+        }
+        boolean sidewaysLabels = longestLabel * 8 > slotWidth * 0.9;
+        double sidewaysFont = Math.min(12, slotWidth * 0.75);
+
+        // values above the bars only when there's room for them, otherwise hover a bar to see it
+        boolean showValues = slotWidth >= 28;
+
+        int top = 24;                                                      // room for the value above a full bar
+        int bottom = sidewaysLabels ? (int) (longestLabel * sidewaysFont * 0.6) + 16 : 36;   // room for the labels
+        int chartHeight = 200;
+        int height = top + chartHeight + bottom;
+
+        double largestValue = 0.0;
+        for (double value : values) {
+            largestValue = Math.max(largestValue, value);
+        }
+
+        // all-zero data to use a scale of 1 to avoid zero division
+        double scaleMax = fixedMax != null ? fixedMax : Math.max(largestValue, 1.0);
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+                Locale.ROOT,
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" "
+                        + "viewBox=\"0 0 %d %d\" width=\"100%%\" "
+                        + "role=\"img\" aria-label=\"Vertical bar chart\">\n",
+                WIDTH, height));
+
+        sb.append("""
+                <style>
+                  .chart-label { font: 14px system-ui, sans-serif; fill: #222; }
+                  .chart-value { font: 13px system-ui, sans-serif; fill: #333; }
+                  .chart-track { fill: #eeeeee; }
+                  .chart-bar { fill: #3978c5; }
+                  .chart-empty { font: 15px system-ui, sans-serif; fill: #555; }
+                </style>
+                """);
+
+        if (labels.isEmpty()) {
+            sb.append(String.format(
+                    Locale.ROOT,
+                    "<text class=\"chart-empty\" x=\"%d\" y=\"%d\" text-anchor=\"middle\">"
+                            + "No data available</text>\n",
+                    WIDTH / 2, height / 2));
+        } else {
+            double barWidth = Math.min(slotWidth * 0.6, 80);
+
+            for (int i = 0; i < labels.size(); i++) {
+                double value = values.get(i);
+                double barHeight = chartHeight * Math.min(value / scaleMax, 1.0);
+                double centre = side + slotWidth * i + slotWidth / 2;
+                double x = centre - barWidth / 2;
+                double y = top + chartHeight - barHeight;
+
+                sb.append(String.format(
+                        Locale.ROOT,
+                        "<rect class=\"chart-track\" x=\"%.2f\" y=\"%d\" "
+                                + "width=\"%.2f\" height=\"%d\" rx=\"3\"/>\n",
+                        x, top, barWidth, chartHeight));
+
+                // the <title> shows the label and value when the mouse is over the bar
+                sb.append(String.format(
+                        Locale.ROOT,
+                        "<rect class=\"chart-bar\" x=\"%.2f\" y=\"%.2f\" "
+                                + "width=\"%.2f\" height=\"%.2f\" rx=\"3\"><title>%s: %s</title></rect>\n",
+                        x, y, barWidth, barHeight, escapeXml(labels.get(i)), formatValue(value)));
+
+                if (showValues) {
+                    sb.append(String.format(
+                            Locale.ROOT,
+                            "<text class=\"chart-value\" x=\"%.2f\" y=\"%.2f\" "
+                                    + "text-anchor=\"middle\">%s</text>\n",
+                            centre, y - 6, formatValue(value)));
+                }
+
+                if (sidewaysLabels) {
+                    // turned to read upwards, ending just under the middle of the bar
+                    int labelY = top + chartHeight + 8;
+                    sb.append(String.format(
+                            Locale.ROOT,
+                            "<text class=\"chart-label\" x=\"%.2f\" y=\"%d\" text-anchor=\"end\" "
+                                    + "dominant-baseline=\"middle\" style=\"font-size: %.1fpx\" "
+                                    + "transform=\"rotate(-90 %.2f %d)\">%s</text>%n",
+                            centre, labelY, sidewaysFont, centre, labelY, escapeXml(labels.get(i))));
+                } else {
+                    sb.append(String.format(
+                            Locale.ROOT,
+                            "<text class=\"chart-label\" x=\"%.2f\" y=\"%d\" "
+                                    + "text-anchor=\"middle\">%s</text>%n",
+                            centre, top + chartHeight + 22, escapeXml(labels.get(i))));
+                }
+            }
+        }
+
+        sb.append("</svg>");
+        return sb.toString();
+    }
+
     private static void validateInputs(List<String> labels, List<Double> values, Double fixedMax) {
         Objects.requireNonNull(labels, "labels must not be null");
         Objects.requireNonNull(values, "values must not be null");
