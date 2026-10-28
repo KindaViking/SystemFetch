@@ -20,7 +20,7 @@ public class liveServer {
 
         // "/" sends the same page as report.html
         server.createContext("/", exchange -> {
-            String html = htmlReport.build(cpuText(), memInfo.report(),
+            String html = htmlReport.build(withoutPerCpuLoad(cpuText()), memInfo.report(),
                     usbInfo.readAll(), pciInfo.readAll(), lookup);
             send(exchange, "text/html", html);
         });
@@ -29,7 +29,7 @@ public class liveServer {
         // which the page asks for every second
         server.createContext("/data", exchange -> {
             cpuInfo.Load load = measureLoad();
-            String json = "{\"cpu\": " + jsonString(cpuInfo.report(load))
+            String json = "{\"cpu\": " + jsonString(withoutPerCpuLoad(cpuInfo.report(load)))
                     + ", \"memory\": " + jsonString(memInfo.report())
                     + ", \"cpuChart\": " + jsonString(cpuChart(load)) + "}";
             send(exchange, "application/json", json);
@@ -68,7 +68,20 @@ public class liveServer {
             labels.add("CPU " + i);
             values.add(perCore[i] * 100);
         }
-        return barChart.create(labels, values, 100.0);
+        return barChart.createVertical(labels, values, 100.0);
+    }
+
+    // the bar chart shows each CPU's load, so the live page leaves those lines out of the text
+    // (the terminal and report.html still show them)
+    private static String withoutPerCpuLoad(String cpuText) {
+        StringBuilder sb = new StringBuilder();
+        for (String line : cpuText.split("\n")) {
+            if (line.equals("Load per logical CPU:") || line.matches("\\s+CPU \\d+: .*")) {
+                continue;
+            }
+            sb.append(line).append("\n");
+        }
+        return sb.toString();
     }
 
     // puts text in quotes for JSON, escaping backslashes, quotes and line breaks
