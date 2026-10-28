@@ -163,6 +163,12 @@ public class cpuInfo {
 */
 
     public static String report() throws InterruptedException {
+        return report(findLoad(1000));
+    }
+
+    // same report, using a load that has already been measured
+    // (the live server uses one measurement for both this text and the bar chart)
+    public static String report(Load load) {
         StringBuilder sb = new StringBuilder();
         int physical = getPhysicalCount();
         int logical = getLogicalCount();
@@ -173,7 +179,6 @@ public class cpuInfo {
                 .append('\n');
         sb.append("Logical cores: ").append(logical).append("\n");
 
-        Load load = findLoad(1000);
         sb.append("Load per logical CPU:\n");
         double[] perCore = load.perCore();
         for (int i = 0; i < perCore.length; i++)
@@ -291,4 +296,3 @@ public class cpuInfo {
         }
     }
 }
-
