@@ -104,8 +104,8 @@ public class htmlReport {
 
             sb.append("<tr>");
             sb.append("<td>").append(escape(d.address())).append("</td>");
-            sb.append("<td>").append(escape(vendorName)).append("</td>");
-            sb.append("<td>").append(escape(deviceName)).append("</td>");
+            sb.append("<td>").append(escape(String.format("%s (%s)", vendorName, hex(d.vendorId(), 4)))).append("</td>");
+            sb.append("<td>").append(escape(String.format("%s (%s)", deviceName, hex(d.deviceId(), 4)))).append("</td>");
             sb.append("<td>").append(hex(d.classId(), 6)).append("</td>");
             sb.append("</tr>\n");
         }
@@ -126,8 +126,8 @@ public class htmlReport {
 
             sb.append("<tr>");
             sb.append("<td>").append(escape(d.name())).append("</td>");
-            sb.append("<td>").append(escape(vendorName)).append("</td>");
-            sb.append("<td>").append(escape(productName)).append("</td>");
+            sb.append("<td>").append(escape(String.format("%s (%s)", vendorName, hex(d.vendorId(), 4)))).append("</td>");
+            sb.append("<td>").append(escape(String.format("%s (%s)", productName, hex(d.productId(), 4)))).append("</td>");
             sb.append("</tr>\n");
         }
 

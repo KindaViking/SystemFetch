@@ -90,10 +90,12 @@ public class usbInfo {
             String productName = lookup.usbProductName(d.vendorId(), d.productId());
 
             sb.append(String.format(
-                    "  %s  %s - %s%n",
+                    "  %s  %s (%s) - %s (%s)%n",
                     d.name(),
                     vendorName,
-                    productName));
+                    hex(d.vendorId()),
+                    productName,
+                    hex(d.productId())));
         }
 
         return sb.toString();

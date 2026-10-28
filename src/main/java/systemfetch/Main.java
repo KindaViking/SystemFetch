@@ -1,7 +1,6 @@
 package systemfetch;
 
 import java.util.List;
-import java.util.Scanner;
 import java.nio.file.Path;
 
 public class Main {
@@ -35,6 +34,19 @@ public class Main {
         //sorting pci
         List<pciInfo.PciDevice> pciDevices = pciInfo.readAll();
 
+        //print sorted PCI lists
+        System.out.println("PCI (By vendor)");
+        System.out.println(pciInfo.report(pciInfo.sortByVendor(pciDevices, lookup)));
+
+        System.out.println("PCI (By Bus, Device, Function)");
+        System.out.println(pciInfo.report(pciInfo.sortByAddress(pciDevices)));
+
+        //PCI summary
+        System.out.println("PCI Summary");
+        System.out.print(pciInfo.vendorSummary(pciDevices, lookup));
+        System.out.println();
+        System.out.print(pciInfo.classSummary(pciDevices));
+
         //calling htmlReport to write data to html file and display it
         String html = htmlReport.build(cpuText, memText, usbDevices, pciDevices, lookup);
         Path reportPath = htmlReport.write(html);
@@ -42,33 +54,6 @@ public class Main {
             htmlReport.open(reportPath);
         }
 
-        //add a loop to ask which sort the user would rather see
-        Scanner scanner = new Scanner(System.in);
-        //keep asking until quit is received
-        while (true){
-            System.out.println("Sort PCI devices (type: unsorted/vendor/address/q)");
-            String choice = scanner.nextLine().strip().toLowerCase();
-
-            if (choice.equals("q")){
-                break;
-            }
-            switch (choice){
-                case "unsorted" ->{
-                    System.out.println("Unsorted PCI devices");
-                    System.out.println(pciInfo.report(pciInfo.readAll()));
-                }
-                case "vendor" ->{
-                    System.out.println("PCI (By vendor)");
-                    System.out.println(pciInfo.report(pciInfo.sortByVendor(pciDevices, lookup)));
-                }
-                case "address" -> {
-                    System.out.println("PCI (By Bus, Device, Function)");
-                    System.out.println(pciInfo.report(pciInfo.sortByAddress(pciDevices)));
-                }
-                default -> System.out.println("Unknown option, re-enter input");
-            }
-        }
-        scanner.close();
     }
 
 }

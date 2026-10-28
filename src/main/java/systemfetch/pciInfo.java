@@ -6,7 +6,9 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class pciInfo {
@@ -91,10 +93,12 @@ public class pciInfo {
             String deviceName = lookup.pciDeviceName(d.vendorId(), d.deviceId());
 
             sb.append(String.format(
-                    "  %s  %s - %s  class %s%n",
+                    "  %s  %s (%s) - %s (%s)  class %s%n",
                     d.address(),
                     vendorName,
+                    hex(d.vendorId()),
                     deviceName,
+                    hex(d.deviceId()),
                     classHex(d.classId())));
         }
 
@@ -147,6 +151,63 @@ public class pciInfo {
         List<PciDevice> sorted = new ArrayList<>(devices);
         sorted.sort(Comparator.comparing((PciDevice device) -> lookup.pciVendorName(device.vendorId()), String.CASE_INSENSITIVE_ORDER).thenComparing(BY_ADDRESS));
         return sorted;
+    }
+
+    /*
+     * PCI Device counting and summary methods
+     */
+
+    public static Map<String, Integer> countByVendor(List<PciDevice> devices, idLookup lookup) {
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        for (PciDevice d : devices) {
+            String vendorName = lookup.pciVendorName(d.vendorId());
+            counts.put(vendorName, counts.getOrDefault(vendorName, 0) + 1);
+        }
+        return counts;
+    }
+
+    public static Map<String, Integer> countByClass(List<PciDevice> devices) {
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        for (PciDevice d : devices) {
+            String classStr = classHex(d.classId());
+            counts.put(classStr, counts.getOrDefault(classStr, 0) + 1);
+        }
+        return counts;
+    }
+
+    public static String vendorSummary(List<PciDevice> devices, idLookup lookup) {
+        if (devices.isEmpty()) {
+            return "No PCI devices found.\n";
+        }
+        Map<String, Integer> counts = countByVendor(devices, lookup);
+        StringBuilder sb = new StringBuilder();
+        sb.append("PCI devices per vendor:\n");
+        counts.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()
+                        .thenComparing(Map.Entry.comparingByKey(String.CASE_INSENSITIVE_ORDER)))
+                .forEach(e -> sb.append(String.format("  %-40s : %d%n", e.getKey(), e.getValue())));
+        return sb.toString();
+    }
+
+    public static String classSummary(List<PciDevice> devices) {
+        if (devices.isEmpty()) {
+            return "No PCI devices found.\n";
+        }
+        Map<String, Integer> counts = countByClass(devices);
+        StringBuilder sb = new StringBuilder();
+        sb.append("PCI devices per class:\n");
+        counts.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()
+                        .thenComparing(Map.Entry.comparingByKey()))
+                .forEach(e -> sb.append(String.format("  %-40s : %d%n", e.getKey(), e.getValue())));
+        return sb.toString();
+    }
+
+    public static String summary(List<PciDevice> devices, idLookup lookup) {
+        if (devices.isEmpty()) {
+            return "No PCI devices found.\n";
+        }
+        return vendorSummary(devices, lookup) + "\n" + classSummary(devices);
     }
 
 
