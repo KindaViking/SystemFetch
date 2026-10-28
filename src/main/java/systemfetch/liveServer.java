@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 // a small web server so the report updates live in the browser
 // run it from the project folder, then open http://localhost:8080
@@ -23,10 +25,13 @@ public class liveServer {
             send(exchange, "text/html", html);
         });
 
-        // "/data" sends fresh CPU and memory text, which the page asks for every second
+        // "/data" sends fresh CPU and memory text plus the CPU bar chart,
+        // which the page asks for every second
         server.createContext("/data", exchange -> {
-            String json = "{\"cpu\": " + jsonString(cpuText())
-                    + ", \"memory\": " + jsonString(memInfo.report()) + "}";
+            cpuInfo.Load load = measureLoad();
+            String json = "{\"cpu\": " + jsonString(cpuInfo.report(load))
+                    + ", \"memory\": " + jsonString(memInfo.report())
+                    + ", \"cpuChart\": " + jsonString(cpuChart(load)) + "}";
             send(exchange, "application/json", json);
         });
 
@@ -42,6 +47,28 @@ public class liveServer {
             Thread.currentThread().interrupt();
             return "";
         }
+    }
+
+    // measures the CPU load over one second, or no load if interrupted
+    private static cpuInfo.Load measureLoad() {
+        try {
+            return cpuInfo.findLoad(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return new cpuInfo.Load(0, new double[0]);
+        }
+    }
+
+    // SVG bar chart of each CPU's load as a percentage, made with barChart
+    private static String cpuChart(cpuInfo.Load load) {
+        double[] perCore = load.perCore();
+        List<String> labels = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
+        for (int i = 0; i < perCore.length; i++) {
+            labels.add("CPU " + i);
+            values.add(perCore[i] * 100);
+        }
+        return barChart.create(labels, values, 100.0);
     }
 
     // puts text in quotes for JSON, escaping backslashes, quotes and line breaks
