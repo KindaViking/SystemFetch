@@ -59,8 +59,17 @@ public class cpuInfo {
                 count++;
             }
         }
-        // if count is > 0, return the number of cores : fallback onto readSnapshot().cores().size() otherwise
-        return count > 0 ? count : readSnapshot().cores().size();
+        if (count > 0) {
+            return count;
+        }
+        try {
+            int snapshotCores = readSnapshot().cores().size();
+            if (snapshotCores > 0) {
+                return snapshotCores;
+            }
+        } catch (IllegalStateException ignored) {
+        }
+        return Runtime.getRuntime().availableProcessors();
     }
 
     public static int getPhysicalCount() {
@@ -128,9 +137,21 @@ public class cpuInfo {
             throw new IllegalArgumentException("milliseconds must be zero or greater");
         }
 
-        CpuSnapshot before = readSnapshot();
+        CpuSnapshot before;
+        try {
+            before = readSnapshot();
+        } catch (IllegalStateException e) {
+            return new Load(0.0, new double[0]);
+        }
+
         Thread.sleep(milliseconds);
-        CpuSnapshot after = readSnapshot();
+
+        CpuSnapshot after;
+        try {
+            after = readSnapshot();
+        } catch (IllegalStateException e) {
+            return new Load(0.0, new double[0]);
+        }
 
         double overall = calculateLoad(before.total(), after.total());
         int count = Math.min(before.cores().size(), after.cores().size());
@@ -181,8 +202,12 @@ public class cpuInfo {
 
         sb.append("Load per logical CPU:\n");
         double[] perCore = load.perCore();
-        for (int i = 0; i < perCore.length; i++)
-            sb.append(String.format(Locale.ROOT, "  CPU %d: %.1f%%%n", i, perCore[i] * 100));
+        if (perCore.length == 0) {
+            sb.append("  unavailable\n");
+        } else {
+            for (int i = 0; i < perCore.length; i++)
+                sb.append(String.format(Locale.ROOT, "  CPU %d: %.1f%%%n", i, perCore[i] * 100));
+        }
         sb.append(String.format(Locale.ROOT, "Overall load: %.1f%%%n", load.all() * 100));
         return sb.toString();
     }
