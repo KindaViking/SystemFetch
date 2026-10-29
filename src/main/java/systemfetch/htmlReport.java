@@ -33,6 +33,8 @@ public class htmlReport {
         //CPU: <pre> keeps the formatting from cpuInfo.report
         sb.append("<h2>CPU</h2>\n");
         sb.append("<pre id=\"cpu\">").append(escape(cpuText)).append("</pre>\n");
+        // filled in with a bar chart of each CPU's load when the page comes from liveServer
+        sb.append("<div id=\"cpu-chart\"></div>\n");
 
         //memory
         sb.append("<h2>Memory</h2>\n");
@@ -94,7 +96,8 @@ public class htmlReport {
                 const data = await response.json();
                 document.getElementById("cpu").textContent = data.cpu;
                 document.getElementById("memory").textContent = data.memory;
-                setTimeout(update, 1000);
+                document.getElementById("cpu-chart").innerHTML = data.cpuChart;
+                setTimeout(update, 0);
               }
 
               if (location.protocol.startsWith("http")) {
