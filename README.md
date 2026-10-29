@@ -69,4 +69,16 @@ machine open it.
 4. Press Ctrl+C in the ssh session to stop the server, then `exit` to close the connection.
 
 **Using WSL on Windows:** if the ssh command is run from WSL and the browser on
-Windows
+Windows can't connect, either run the same ssh command from Windows PowerShell
+instead, or forward on all addresses from WSL:
+```bash
+ssh -L 0.0.0.0:8080:localhost:8080 your-username@alderaan
+```
+
+### If port 8080 is already in use
+If the server reports `Address already in use`, another program (or another user on
+alderaan) is using port 8080. Change `8080` to a free port such as `8123` in
+`src/main/java/systemfetch/liveServer.java`, run `mvn compile` again, and use that
+port in the browser address (and in the ssh command, `-L 8123:localhost:8123`).
+On your own machine, also make sure a local copy of the server isn't still running
+before starting the port forward, as both would use port 8080.
